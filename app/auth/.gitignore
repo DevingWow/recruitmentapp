@@ -4,4 +4,7 @@ node_modules/
 
 docker_env_setup.sh
 
+herokuCLI_deploy_script.*
+
+
 *log.txt
