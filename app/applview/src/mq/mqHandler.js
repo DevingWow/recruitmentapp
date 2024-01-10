@@ -13,15 +13,18 @@ const HerokukafkaAdapter = require ('./HerokukafkaAdapter');
 async function receiveMessages(mqInstance, msgcallback) {
     try {
         await mqInstance.receiveMessage(async (msg) => {
-            
-            const message = JSON.parse(mqInstance.extractMessageContentString(msg));
-            if (message === null || message === undefined){
-                mqInstance.nackMessage(msg); 
-                logger.log("[ERROR Reiceive Message]: " + "Message is null");
+            try {
+                const message = JSON.parse(mqInstance.extractMessageContentString(msg));
+                if (message === null || message === undefined){
+                    mqInstance.nackMessage(msg); 
+                    logger.log("[ERROR Reiceive Message]: " + "Message is null");
+                }
+                mqInstance.ackMessage(msg);
+                logger.log("[Recieved Message]: " + mqInstance.extractMessageContentString(msg));
+                await msgcallback(message);
+            } catch (error) {
+                logger.log("[ERROR Reiceive Message]: " + error.stack);
             }
-            mqInstance.ackMessage(msg);
-            logger.log("[Recieved Message]: " + mqInstance.extractMessageContentString(msg));
-            await msgcallback(message);
         });
     } catch (error) {
         logger.log("[ERROR Reiceive Message]: " + error.stack);
@@ -35,7 +38,6 @@ async function initMQ(mqInstance, msgcallback){
         await receiveMessages(mqInstance, msgcallback);
     } catch (error) {
         logger.log("[ERROR Init MQ]: " + error.stack);
-        throw error;
     }
 } 
 

@@ -2,6 +2,8 @@
 
 #Run this program from repo root directory.
 
+set -e
+
 RABBITMQ_HOSTNAME='rabbitMQ'
 RABBITMQ_NAME='some-rabbit'
 RABBITMQ_CONTAINER_PORT='5672' 
@@ -13,12 +15,13 @@ NETWORK_NAME='micro-network'
 docker rm -f $RABBITMQ_NAME
 docker run -d --hostname $RABBITMQ_HOSTNAME --name $RABBITMQ_NAME --network $NETWORK_NAME -p $RABBITMQ_HOST_PORT:$RABBITMQ_CONTAINER_PORT rabbitmq:3-management
 
-echo "sleeping 10 seconds"
-sleep 10
+sleeptime=5
+echo "sleeping $sleeptime seconds"
+sleep $sleeptime
 
 NGINX_DOCKER_PATH='app/gateway/local/'
-MICROAUTH_DOCKER_PATH='deployment/local/Dockerfile'
-APPLVIEW_DOCKER_PATH='app/applview/'
+MICROAUTH_DOCKER_PATH='app/applview/deployment/local/Dockerfile'
+APPLVIEW_DOCKER_PATH='app/applview/deployment/local/Dockerfile'
 APPLCREATE_DOCKER_PATH='app/applcreate/'
 
 NGINX_TAG='nginx-server'
@@ -32,6 +35,7 @@ APPLVIEW_CONTAINER_NAME='applview_micro'
 APPLCREATE_CONTAINER_NAME='applcreate_micro'
 
 MICRO_AUTH_CONTEXT='app/auth/'
+APPLVIEW_CONTEXT='app/applview/'
 
 GATEWAY_CONTAINER_PORT='80'
 HOST_MAPPING_PORT='8000'
@@ -43,7 +47,7 @@ docker rm -f $APPLCREATE_CONTAINER_NAME
 
 docker build -t $NGINX_TAG $NGINX_DOCKER_PATH
 docker build -t $MICROAUTH_TAG -f $MICROAUTH_DOCKER_PATH $MICRO_AUTH_CONTEXT
-docker build -t $APPLVIEW_TAG $APPLVIEW_DOCKER_PATH
+docker build -t $APPLVIEW_TAG -f $APPLVIEW_DOCKER_PATH $APPLVIEW_CONTEXT
 docker build -t $APPLCREATE_TAG $APPLCREATE_DOCKER_PATH
 
 docker run -d --name $MICROAUTH_CONTAINER_NAME --net $NETWORK_NAME $MICROAUTH_TAG

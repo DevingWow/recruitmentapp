@@ -5,13 +5,10 @@ WORKDIR /usr/src/applview
 
 COPY package*.json ./
 
+RUN echo "RUNNING APPLVIEW DOCKERFILE"
+
 RUN npm install
 
 COPY . .
-
-RUN chmod +x docker_env_setup.sh
-RUN ./docker_env_setup.sh
-
-EXPOSE 8040
 
 CMD [ "npm", "start"]
