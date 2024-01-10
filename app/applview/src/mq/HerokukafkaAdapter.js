@@ -1,4 +1,3 @@
-const e = require('express');
 const MessageBroker = require('./MessageBroker');
 
 const CONNECTION_TIMEOUT_DEFAULT = 10000;

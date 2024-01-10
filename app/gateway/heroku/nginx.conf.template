@@ -12,13 +12,19 @@ http {
         server ¤AUTH_SERVICE_PLACEHOLDER¤;
     }
 
+    upstream appl_service {
+        server ¤APPLVIEW_SERVICE_PLACEHOLDER¤;
+    }
+
     server {
         set $auth_host ¤AUTH_SERVICE_PLACEHOLDER¤;
+        set $applview_host ¤APPLVIEW_SERVICE_PLACEHOLDER¤;
         listen ¤PORT_PLACEHOLDER¤;
 
         location = /auth_check {
             internal;
             proxy_pass http://auth_service/check_auth;
+            proxy_set_header Host $auth_host;
             proxy_pass_request_body off;
             proxy_set_header Content-Length "";
             proxy_set_header X-Original-URI $request_uri;
@@ -34,5 +40,16 @@ http {
             proxy_pass http://auth_service;
             proxy_set_header Host $auth_host;
         }
+
+        # Route for /applications
+        location /applications {
+            auth_request /auth_check;
+            auth_request_set $auth_status $upstream_status;
+            error_page 401 = @error401;
+            proxy_pass http://appl_service;
+            proxy_set_header Host $applview_host;
+            # ... (other proxy settings)
+        }
+
     }
 }

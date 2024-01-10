@@ -1,96 +1,70 @@
-const MessageBroker = require('./MessageBroker')
+const MessageBroker = require('./MessageBroker');
+
+const CONNECTION_TIMEOUT_DEFAULT = 10000;
 
 class HerokukafkaAdapter extends MessageBroker {
     constructor(){
         super();
-        this.kafka = require('node-rdkafka');
+        this.kafka = require('no-kafka');
         this.topic = process.env.KAFKA_TOPIC||'local_queue';
+        if (process.env.KAFKA_PREFIX){
+            this.topic = process.env.KAFKA_PREFIX + this.topic;
+        }
     }
 
     async connect(){
         try {
             const config = {
-                'metadata.broker.list': process.env.KAFKA_URL,
-                'security.protocol': 'ssl',
-                'ssl.certificate.location': process.env.KAFKA_CERT,
-                'ssl.key.location': process.env.KAFKA_KEY,
-                'ssl.ca.location': process.env.KAFKA_CA,
-                'dr_cb': true
+                connectionString: process.env.KAFKA_URL,
+                ssl: {
+                    cert: process.env.KAFKA_CLIENT_CERT,
+                    key: process.env.KAFKA_CLIENT_CERT_KEY
+                },
+                connectionTimeout: CONNECTION_TIMEOUT_DEFAULT||process.env.KAFKA_CONNECTION_TIMEOUT,
             };
             if(process.env.KAFKA_PRODUCER_FLAG === 'true'){
-                this.producer = new this.kafka.HighLevelProducer(config);
-                this.producer.connect();
+                this.producer = new this.kafka.Producer(config);
+                await this.producer.init();
             }
             if(process.env.KAFKA_CONSUMER_FLAG === 'true'){
-                this.consumer = new this.kafka.KafkaConsumer(config);
-                this.consumer.connect();
+                this.consumer = new this.kafka.SimpleConsumer(config);
+                await this.consumer.init();
             }
         } catch (error) {
             throw error;
         }
     }
 
-    async #producerReadyPromise(timeOutAfter){
-        return new Promise((resolve, reject) => {
-            this.producer.on('ready', ()=> resolve())
 
-            setTimeout(()=>{
-                reject(new Error('Timed out waiting for producer to be ready'));
-            }, timeOutAfter);
-        });
-    }
 
-    async #consumerReadyPromise(timeOutAfter){
-        return new Promise((resolve, reject) => {
-            this.consumer.on('ready', ()=> resolve())
-
-            setTimeout(()=>{
-                reject(new Error('Timed out waiting for consumer to be ready'));
-            }, timeOutAfter);
-        });
-    }
-
-    async #sendMsgPromise(msg) {
-        return new Promise((resolve, reject) => {
-            this.producer.produce(this.topic, null, Buffer.from(msg), process.env.KAFKA_PROD_KEY || "key", Date.now(), (err, offset) => {
-                if (err) {
-                    reject(new Error('Could not confirm message was received by kafka MQ'));
-                } else {
-                    resolve({status: 'OK'});
+    async sendMessage(msg){
+        try {
+            const res = await this.producer.send({
+                topic: this.topic,
+                message: {
+                    value: msg
                 }
             });
-        });
-    }
-
-    async #readMsgPromise(){
-        const TIME_OUT_MS = 5000;
-        return new Promise((resolve, reject)=> {
-            setTimeout(()=>
-                reject(new Error('Kafka time-out after attempting to read from MQ')),
-            TIME_OUT_MS);
-            this.consumer.subscribe([this.topic]);
-            this.consumer.consume();
-            this.consumer.on('data', data => {
-                resolve(data);
-            })
-        });
-    }
-
-    async sendMessage(msg, timeoutAfter=1000){
-        try {
-            await this.#producerReadyPromise(timeoutAfter);
-            return await this.#sendMsgPromise(msg);
+            console.log(res);
         } catch (error) {
             throw error;
         }
+    }
+
+    extractMessageContentString(msg){
+        return msg.message.value.toString('utf8');
     }
 
     async receiveMessage(callback){
-        const READY_TIME_OUT = 2000;
         try {
-            await this.#consumerReadyPromise(READY_TIME_OUT);
-            const msg = await this.#readMsgPromise();
-            callback(msg);
+            const dataHandler = (msgSet, topic, partition) => {
+                msgSet.forEach((msg) => {
+                    //const msg = m.message.value.toString('utf8');
+                    callback(msg);
+                });
+            };
+
+            await this.consumer.subscribe(this.topic, dataHandler);
         } catch (error) {
             throw error;
         }
@@ -98,7 +72,7 @@ class HerokukafkaAdapter extends MessageBroker {
 
     async ackMessage(msg){
         try {
-            this.consumer.commitMessage(msg);
+            this.consumer.commitOffset(msg);
         } catch (error) {
             throw error;
         }
