@@ -40,6 +40,7 @@ class Controller {
             console.log("ACKING MESSAGE");
             return true;
         } catch (error) {
+            console.log(error);
             throw error;
         }
     }

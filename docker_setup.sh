@@ -22,7 +22,7 @@ sleep $sleeptime
 NGINX_DOCKER_PATH='app/gateway/local/'
 MICROAUTH_DOCKER_PATH='app/applview/deployment/local/Dockerfile'
 APPLVIEW_DOCKER_PATH='app/applview/deployment/local/Dockerfile'
-APPLCREATE_DOCKER_PATH='app/applcreate/'
+APPLCREATE_DOCKER_PATH='app/applcreate/deployment/local/Dockerfile'
 
 NGINX_TAG='nginx-server'
 MICROAUTH_TAG='auth-micro'
@@ -36,6 +36,7 @@ APPLCREATE_CONTAINER_NAME='applcreate_micro'
 
 MICRO_AUTH_CONTEXT='app/auth/'
 APPLVIEW_CONTEXT='app/applview/'
+APPLCREATE_CONTEXT='app/applcreate/'
 
 GATEWAY_CONTAINER_PORT='80'
 HOST_MAPPING_PORT='8000'
@@ -48,7 +49,7 @@ docker rm -f $APPLCREATE_CONTAINER_NAME
 docker build -t $NGINX_TAG $NGINX_DOCKER_PATH
 docker build -t $MICROAUTH_TAG -f $MICROAUTH_DOCKER_PATH $MICRO_AUTH_CONTEXT
 docker build -t $APPLVIEW_TAG -f $APPLVIEW_DOCKER_PATH $APPLVIEW_CONTEXT
-docker build -t $APPLCREATE_TAG $APPLCREATE_DOCKER_PATH
+docker build -t $APPLCREATE_TAG -f $APPLCREATE_DOCKER_PATH $APPLCREATE_CONTEXT
 
 docker run -d --name $MICROAUTH_CONTAINER_NAME --net $NETWORK_NAME $MICROAUTH_TAG
 docker run -d --name $APPLVIEW_CONTAINER_NAME --net $NETWORK_NAME $APPLVIEW_TAG

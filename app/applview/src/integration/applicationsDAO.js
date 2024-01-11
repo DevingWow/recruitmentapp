@@ -172,6 +172,7 @@ class ApplicationDAO {
             }
             await transactor.commit();
         } catch (error) {
+            console.log("WOWWW ERROR: " + error)
             await transactor.rollback();
             throw error;
         }

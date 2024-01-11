@@ -1,6 +1,7 @@
 const express = require('express');
 const Exception = require('../util/Exception');
 const controller = require('../controller/controller');
+const logger = require('../util/Logger');
 const router = express.Router();
 
 const entry = router.get('/', async (req, res, next) => {
@@ -13,6 +14,7 @@ const entry = router.get('/', async (req, res, next) => {
 
 const createApplication = router.post('/createApp', async (req, res, next) => {
     try {
+        console.log(req.body);
         const application = req.body?.application;
         const token = req.cookies.auth;
         const MAX_WAIT_TIME = 5000;
@@ -25,6 +27,7 @@ const createApplication = router.post('/createApp', async (req, res, next) => {
         const response = await controller.createApplication(application, token, MAX_WAIT_TIME);
         res.send(response);
     } catch (error) {
+        logger.log(error);
         next(new Exception(error.message, "Failed to create application", 400));
     }
 });

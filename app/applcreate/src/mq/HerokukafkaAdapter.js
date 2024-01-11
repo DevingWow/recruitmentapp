@@ -46,6 +46,7 @@ class HerokukafkaAdapter extends MessageBroker {
                 }
             });
             console.log(res);
+            return {status: 'OK'};
         } catch (error) {
             throw error;
         }
