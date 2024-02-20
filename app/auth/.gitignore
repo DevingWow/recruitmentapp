@@ -8,3 +8,11 @@ herokuCLI_deploy_script.*
 
 
 *log.txt
+
+*.crt* 
+*.pem*
+
+requiredENVS.*
+
+azureCLI_create_ACI.*
+azureCLI_registry_deploy.*

@@ -22,6 +22,12 @@ function init_db(){
         }):new Sequelize(process.env.DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
             host: process.env.DB_HOST||'localhost',
             dialect: 'postgres',
+            dialectOptions: process.env.DB_CERT? {
+                ssl: {
+                    rejectUnauthorized: false,
+                    ca: process.env.DB_CERT
+                }
+            }:{},
             port: process.env.DB_PORT||5432,
             operatorAliases: false,
             define: {
