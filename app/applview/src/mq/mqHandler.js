@@ -3,6 +3,7 @@ const logger = require('../util/Logger');
 const MessageBroker = require('./MessageBroker');
 const MQrabbitLocalAdapter = require('./MQrabbitLocalAdapter');
 const HerokukafkaAdapter = require ('./HerokukafkaAdapter');
+const AzureServiceBusAdapter = require('./AzureServiceBusAdapter');
 
 
 /**
@@ -14,6 +15,7 @@ async function receiveMessages(mqInstance, msgcallback) {
     try {
         await mqInstance.receiveMessage(async (msg) => {
             try {
+                logger.log("[Recieved Message]: " + msg);
                 const message = JSON.parse(mqInstance.extractMessageContentString(msg));
                 if (message === null || message === undefined){
                     mqInstance.nackMessage(msg); 
@@ -47,9 +49,12 @@ function MessageBrokerFactory() {
             return new MQrabbitLocalAdapter();
         case 'kafka':
             return new HerokukafkaAdapter();
+        case 'azure':
+            return new AzureServiceBusAdapter();
         default:
             return new MQrabbitLocalAdapter();
     }
 }
+
 
 module.exports = {MessageBrokerFactory, initMQ};

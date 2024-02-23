@@ -3,6 +3,7 @@ const logger = require('../util/Logger');
 const MessageBroker = require('./MessageBroker');
 const MQrabbitLocalAdapter = require('./MQrabbitLocalAdapter');
 const HerokukafkaAdapter = require ('./HerokukafkaAdapter');
+const AzureServiceBusAdapter = require('./AzureServiceBusAdapter');
 
 /**
  * 
@@ -14,6 +15,8 @@ function MessageBrokerFactory() {
             return new MQrabbitLocalAdapter();
         case 'kafka':
             return new HerokukafkaAdapter();
+        case 'azure':
+            return new AzureServiceBusAdapter();
         default:
             return new MQrabbitLocalAdapter();
     }
