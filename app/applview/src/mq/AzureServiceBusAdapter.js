@@ -59,13 +59,17 @@ class AzureServiceBusAdapter extends MessageBroker {
     }
 
     async ackMessage(msg){
+        const MESSAGE_LOCK_LOST_ERROR_CODE = 'MessageLockLost';
         try {
             await this.receiver.completeMessage(msg);
         } catch (error) {
+            logger.log(error);
+            if (error.code === MESSAGE_LOCK_LOST_ERROR_CODE){
+                await this.receiver.abandonMessage(msg);
+            }
             throw error;
         }
     }
-
 }
 
 

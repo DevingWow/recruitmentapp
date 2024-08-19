@@ -18,6 +18,12 @@ function init_db(){
             operatorAliases: false,
             define: {
                 timestamps: false
+            },
+            pool:{
+                max: parseInt(process.env.MAX_POOL)||5,
+                min: 0,
+                acquire: 30000,
+                idle: 10000
             }
         }):new Sequelize(process.env.DATABASE, process.env.DB_USERNAME, process.env.DB_PASSWORD, {
             host: process.env.DB_HOST||'localhost',
@@ -32,10 +38,9 @@ function init_db(){
             operatorAliases: false,
             define: {
                 timestamps: false
-              },
-        
+            },
             pool:{
-                max: 5,
+                max: parseInt(process.env.MAX_POOL)||5,
                 min: 0,
                 acquire: 30000,
                 idle: 10000

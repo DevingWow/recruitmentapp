@@ -5,3 +5,4 @@ azureCLI_registry_deploy.*
 
 herokuCLI_deploy_script.*
 
+*_githide.*
