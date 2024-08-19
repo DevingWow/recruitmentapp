@@ -16,7 +16,7 @@ As part of the thesis work the applicaton was deployed to both Heroku and Azure 
 
 ## The Microservices
 
-The application consists of four microservices: a NGINX gateway, an authentication service, a job-application creation service, a job-application viewing service.
+The application consists of four microservices: a NGINX gateway, an authentication service, a job-application creation service, a job-application viewing service. The  authentication, job-application creation and viewing microservices were all created using Express.js framework. 
 
 The NGINX gateway routes incoming requests to the appropriate microservice. If authentication is required for accessing a microservice the gateway internally makes an HTTP request to the authentication server and if authentication is successfull forwards the initial request to the initially requested microservice. The authentication microservice is also used for registering job-applicants, and for logging in applicants and recruiters. 
 
