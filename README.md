@@ -1,12 +1,18 @@
 # Recruitment App
 
 This is a repository for a backend microservice application that I created as a part of my bachelors thesis work. 
+The application is purely a backend service, meaning it has no frontend at all, and interaction with it can only be done through pure HTTP with tools such as Postman. 
 
 The application is a simple mock application using mock data. The application is a for a hypothetical amusement park where job seekers can send in their job-application with their relevant credentials, and recruiters and can view these job-applications. Job seekers must register, then login and create a job-application to send in. Recruiter accounts can only be created through administrators who have root access to the databases. Recruiters must login before they can view job-applications. Recruiters can view job-application one-by-one or retrieve a list of a certain number of job-applications. 
 
 below is a simple use-case diagram: 
 
 <img style="float: right;" src="readmefiles/usecase.drawio.png">
+
+## Deployment
+
+As part of the thesis work the applicaton was deployed to both Heroku and Azure and thus each microservice has deployment files for specific platforms. It also locally deployable through containerization using Docker. In local deployment all the microservices are deployed as dockers instances in a virtual network. 
+
 
 ## The Microservices
 
