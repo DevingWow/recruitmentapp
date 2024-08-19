@@ -8,7 +8,7 @@ below is a simple use-case diagram:
 
 <img style="float: right;" src="readmefiles/usecase.drawio.png">
 
-## Microservices
+## The Microservices
 
 The application consists of four microservices: a NGINX gateway, an authentication service, a job-application creation service, a job-application viewing service.
 
@@ -22,3 +22,4 @@ The job-application view microservice is used by recruiters to view job-applicat
 
 Below is an architectural diagram of the application: 
 
+<img style="float: right;" src="readmefiles/arch_diagram.png">
