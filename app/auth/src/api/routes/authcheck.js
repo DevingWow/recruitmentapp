@@ -8,33 +8,34 @@ router.get('/',async (req, res, next) => {
  
     try {
         const originalUri = req.get('X-Original-URI');
+        const user = req.auth;
+        if (originalUri){
+            if (originalUri.startsWith('/applications')){
+                
+                if (user?.role_id === RECRUITER){
+                    res.status(200).send({auth_status: 'Authorized'});
+                }
+                else {
+                    res.status(401).send({auth_status: 'Unauthorized'});
+                }
+                return;
+            }
 
-        if (originalUri.startsWith('/applications')){
-            const user = req.auth;
-            if (user?.role_id === RECRUITER){
-                res.status(200).send({auth_status: 'Authorized'});
+            if(originalUri.startsWith('/createApp')){
+                if (user?.role_id === APPLICANT){
+                    res.status(200).send({auth_status: 'Authorized'});
+                }
+                else {
+                    res.status(401).send({auth_status: 'Unauthorized'});
+                }
+                return;
             }
-            else {
-                res.status(401).send({auth_status: 'Unauthorized'});
-            }
-            return;
-        }
-
-        if(originalUri.startsWith('/createApp')){
-            const user = req.auth;
-            if (user?.role_id === APPLICANT){
-                res.status(200).send({auth_status: 'Authorized'});
-            }
-            else {
-                res.status(401).send({auth_status: 'Unauthorized'});
-            }
-            return;
         }
 
         if (req.auth){
-            res.status(200).send({auth_status: 'Authorized'});
+            res.status(200).send({auth_status: 'Authorized', username: user.username,  name: user.name, role_id: user.role_id});
         } else {
-            res.status(401).send({auth_status: 'Unauthorized'});
+            res.status(401).send({auth_status: 'Unauthorized', });
         }
     } catch (error) {
         next(error);
