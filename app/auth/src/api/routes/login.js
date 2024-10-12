@@ -14,7 +14,7 @@ router.post("/", async (req, res, next) => {
             res.send({login_status: 'success', username: user.username, name: user.name, role_id: user.role_id});
         }
         else {
-            res.send({login_status: 'fail'});
+            res.status(401).send({login_status: 'fail'});
         }
     } catch (error) {
         next(error);
