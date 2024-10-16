@@ -15,12 +15,12 @@ router.post("/", async (req, res, next) => {
             body.surname
         );
 
-        if (validitystatus > 0){
-            res.send({register_status: 'fail', user: body.username, causes: validitystatus.map(cause => cause.msg)});
+        if (validitystatus.length > 0){
+            res.status(400).send({register_status: 'fail', user: body.username, causes: validitystatus.map(cause => cause.msg)});
             return;
         }
 
-        await controller.registerUser(
+        const regStatus = await controller.registerUser(
             body.username,
             body.password,
             body.pnr,
@@ -28,7 +28,8 @@ router.post("/", async (req, res, next) => {
             body.name,
             body.surname
         );
-        res.send({register_status: 'success', user: body.username});
+        if(regStatus === false) res.status(409).send({register_status: 'fail', user: undefined, causes:['account with these credentials already exists']});
+        else res.send({register_status: 'success', user: body.username});
     } catch (error) {
         next(error);
     }
