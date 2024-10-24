@@ -7,4 +7,11 @@ const errorLogger = async (err, req, res, next) => {
     next(err);
 }
 
-module.exports = {errorLogger};
+const requestLogger = (req, res, next) => {
+    logger.log(`INCOMING REQUEST: \nMethod: ${req.method}\nURL: ${req.url}\nHeaders: ${JSON.stringify(req.headers)}\nBody: ${JSON.stringify(req.body)}`);
+    next();    
+}
+
+
+
+module.exports = {errorLogger, requestLogger};

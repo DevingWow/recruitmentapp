@@ -9,7 +9,7 @@ require('dotenv').config({
 });
 
 const express = require('express');
-const { errorLogger } = require('./middleware/loggers');
+const { errorLogger, requestLogger } = require('./middleware/loggers');
 const errorHandler = require('./middleware/errorhandler');
 const logger = require('./util/Logger');
 
@@ -24,7 +24,9 @@ async function main(){
         app.use(bodyparser.json());
         app.use(bodyparser.urlencoded({ extended: true }));
         app.use(cookieparser());
-        
+
+        app.use(requestLogger);
+
         //add use routes here
         app.use(routes);
         
