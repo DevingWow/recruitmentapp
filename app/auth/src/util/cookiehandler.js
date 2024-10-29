@@ -8,7 +8,7 @@ const jwt = require('jsonwebtoken')
  */
 const sendAuthCookie = async (user, res) => {
     console.log(user)
-    const token = jwt.sign({person_id: user.person_id},
+    const token = jwt.sign({person_id: user.person_id, username:user.username},
          process.env.JWT_SECRET, 
          {expiresIn: '30 minutes'});
     res.cookie('auth', token, {
