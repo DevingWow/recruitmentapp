@@ -5,6 +5,11 @@ function isAlphabetic (str) {
     return regex.test(str);
 }
 
+function isValidUsername (str) {
+    const regex = /^\w{3,}$/;
+    return regex.test(str);
+}
+
 function isPositiveFloat (str) {
     const regex = /^\d+(\.\d+)?$/;
     return regex.test(str);
@@ -37,7 +42,8 @@ function isValidPersonDTO(person){
     && isValidPnrFormat(person.pnr)
     && isValidEmailFormat(person.email)
     && isAlphabetic(person.name)
-    && isAlphabetic(person.surname);
+    && isAlphabetic(person.surname)
+    && (person.username && isValidUsername(person.username));
 }
 
 function isValidAvailabilityDTO(av){

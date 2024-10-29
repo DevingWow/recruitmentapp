@@ -20,7 +20,7 @@ class Controller {
 
     async createApplication(application, token, maxWait){
         try {
-            const person = new PersonDTO(application.name, application.surname, application.pnr, application.email);
+            const person = new PersonDTO(application.name, application.surname, application.pnr, application.email, application.username);
             const competence_profiles = application.competence_profiles.map(c => {
                 return new Competence_profileDTO(c.years_of_experience, c.competency.name);
             });

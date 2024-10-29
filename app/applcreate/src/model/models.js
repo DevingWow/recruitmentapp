@@ -19,11 +19,12 @@ class Competence_profileDTO{
 }
 
 class PersonDTO {
-    constructor(name, surname, pnr, email){
+    constructor(name, surname, pnr, email, username){
         this.name = name;
         this.surname = surname;
         this.pnr = pnr;
         this.email = email;
+        this.username = username;
     }
 }
 
