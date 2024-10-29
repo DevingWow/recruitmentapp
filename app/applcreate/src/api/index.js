@@ -3,6 +3,7 @@ const Exception = require('../util/Exception');
 const controller = require('../controller/controller');
 const logger = require('../util/Logger');
 const router = express.Router();
+const {checkAuth} = require('../util/cookieHandler');
 
 const entry = router.get('/', async (req, res, next) => {
     try {
@@ -18,12 +19,14 @@ const createApplication = router.post('/createApp', async (req, res, next) => {
         const application = req.body?.application;
         const token = req.cookies.auth;
         const MAX_WAIT_TIME = 5000;
-        if(!token){
+        const acheck = await checkAuth(req, application?.username);
+        console.log(acheck);
+        if(!acheck){
             throw new Exception("No auth token in request", "No auth token", 401);
         }
         if(!application){
             throw new Exception("No application in request body", "No application data", 400);
-        } 
+        }
         const response = await controller.createApplication(application, token, MAX_WAIT_TIME);
         res.send(response);
     } catch (error) {
