@@ -53,6 +53,14 @@ class Controller {
         }
     }
 
+    async get_applicationByExternalID (ext_id){
+        try {
+            return await this.appDAO.findApplicationByExternalID(ext_id)
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async get_applications (nrOfApplications){
         try {
             return await this.appDAO.findApplications(nrOfApplications);
