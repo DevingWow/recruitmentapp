@@ -4,6 +4,10 @@ const controller = require('../controller/controller');
 const logger = require('../util/Logger');
 const router = express.Router();
 const {checkAuth} = require('../util/cookieHandler');
+const { credentials } = require('amqplib');
+// es6 syntax
+const fetch = (...args) =>
+	import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const entry = router.get('/', async (req, res, next) => {
     try {
@@ -19,14 +23,37 @@ const createApplication = router.post('/createApp', async (req, res, next) => {
         const application = req.body?.application;
         const token = req.cookies.auth;
         const MAX_WAIT_TIME = 5000;
-        const acheck = await checkAuth(req, application?.username);
+        /*const acheck = await checkAuth(req, application?.username);
         console.log(acheck);
         if(!acheck){
             throw new Exception("No auth token in request", "No auth token", 401);
-        }
+        }*/
         if(!application){
             throw new Exception("No application in request body", "No application data", 400);
         }
+        const opts = {
+            method:"GET",
+            headers: {
+                "Cookie": "auth=" + token
+            },
+            redirect: "follow",
+            credentials: "include"
+        }
+        console.log(opts);
+        const authcheck = await fetch(process.env.AUTH_MICRO_URL + "userinfo", opts);
+        const checkJSON = await authcheck.json();
+        console.log(JSON.stringify(checkJSON));
+        if(checkJSON.status !== "success"){
+            throw new Exception("Unauthorized", "Unauthorized", 401);
+        }
+        const user = checkJSON.user;
+        application.username = user.username;
+        application.name = user.name;
+        application.surname = user.surname;
+        application.email = user.email;
+        application.pnr = user.pnr;
+
+
         const response = await controller.createApplication(application, token, MAX_WAIT_TIME);
         res.send(response);
     } catch (error) {

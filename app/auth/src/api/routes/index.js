@@ -5,10 +5,12 @@ const authcheckrouter = require('./authcheck');
 const loginrouter = require('./login');
 const registrationrouter = require('./registration');
 const logoutrouter = require('./logout');
+const userinfoRouter = require('./userinfo');
 
 
 
 router.use('/check_auth', authcheckrouter);
+router.use('/userinfo', userinfoRouter);
 router.use('/login', loginrouter);
 router.use('/logout', logoutrouter);
 router.use('/register', registrationrouter);

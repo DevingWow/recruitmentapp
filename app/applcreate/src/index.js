@@ -43,4 +43,12 @@ async function main(){
     }
 }
 
+    (async () => {
+        const fetch = (await import('node-fetch')).default;
+        fetch(process.env.AUTH_MICRO_URL, { method: "GET" })
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));        // Your code using fetch here
+    })();
+
 main();
