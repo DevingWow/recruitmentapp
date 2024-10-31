@@ -21,28 +21,54 @@ class Controller {
 
     async processMQdata(data){
         try {
-            const decToken = decryptToken(data.token);
-            if (!decToken) throw new Error('Invalid token');
-            const external_person_id = decToken.person_id;
-            const application = data.application;
-            console.log("APPLICATION: ", application, "PERSON ID: ", external_person_id);
-            if(!application || !external_person_id) throw new Error('Invalid application or ext id');
-            const foundByPersonID = await this.appDAO.findApplicationByExternalID(external_person_id);
-            console.log("FOUND BY PERSON ID: ", foundByPersonID);
-            if (!foundByPersonID){
-                console.log("INSERTING NEW APPLICATION");
-                 await this.appDAO.insertNewApplication(application, external_person_id);
-            }
-            else {
-                console.log("UPDATING APPLICATION");
-                await this.appDAO.updateApplication(application, foundByPersonID.person_id);
-            }
-            console.log("ACKING MESSAGE");
-            return true;
+
+            if (data.op === 'delete') return await this.handleDeleteCall(data);
+            else if (data.op === 'create') return await this.handleCreateCall(data);
+            else throw new Error('Invalid operation');
         } catch (error) {
             console.log(error);
             throw error;
         }
+    }
+
+    async handleDeleteCall(data){
+        const decToken = decryptToken(data.token);
+        if (!decToken) throw new Error('Invalid token');
+        if (data.deletions){
+            data.deletions.forEach(async (deletion) => {
+                if (deletion.descriptor === 'availability' && deletion.id){
+                    await this.appDAO.deleteAvailability(deletion.id);
+                }
+                else if (deletion.descriptor === 'competency' && deletion.id){
+                    await this.appDAO.deleteCompetenceProfile(deletion.id);
+                }
+                else {
+                    throw new Error('Invalid descriptor');
+                }
+            });
+            return true;
+        }
+    }
+
+    async handleCreateCall(data) {
+        const decToken = decryptToken(data.token);
+        if (!decToken) throw new Error('Invalid token');
+        const external_person_id = decToken.person_id;
+        const application = data.application;
+        console.log("APPLICATION: ", application, "PERSON ID: ", external_person_id);
+        if (!application || !external_person_id) throw new Error('Invalid application or ext id');
+        const foundByPersonID = await this.appDAO.findApplicationByExternalID(external_person_id);
+        console.log("FOUND BY PERSON ID: ", foundByPersonID);
+        if (!foundByPersonID) {
+            console.log("INSERTING NEW APPLICATION");
+            await this.appDAO.insertNewApplication(application, external_person_id);
+        }
+        else {
+            console.log("UPDATING APPLICATION");
+            await this.appDAO.updateApplication(application, foundByPersonID.person_id);
+        }
+        console.log("ACKING MESSAGE");
+        return true;
     }
 
     async get_applicationByPNR (pnr){

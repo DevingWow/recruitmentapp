@@ -31,7 +31,7 @@ class Controller {
             if(!validateApplication(appDTO)){
                 throw new Exception("Invalid application",400);
             }
-            const wrappedApplication = {token:token, application: application};
+            const wrappedApplication = {op:"create",token:token, application: application};
             const confirmation =  await this.mqInstance.sendMessage(JSON.stringify(wrappedApplication));
             if(confirmation.status !== 'OK'){
                 throw new Exception("Could not send application",500);
@@ -41,6 +41,21 @@ class Controller {
             throw error;
         }
     }
+
+    async deletePartofApplication(deletions, token){
+        try {
+            const wrappedData = {op:"delete", token:token, deletions: deletions};
+            const confirmation = await this.mqInstance.sendMessage(JSON.stringify(wrappedData));
+            console.log(confirmation);
+            if(confirmation.status !== 'OK'){
+                throw new Exception("Could not delete application part");
+            }
+            return "application part deleted";
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }
 
 const controller = new Controller();

@@ -17,6 +17,8 @@ const entry = router.get('/', async (req, res, next) => {
     }
 });
 
+
+
 const createApplication = router.post('/createApp', async (req, res, next) => {
     try {
         console.log(req.body);
@@ -63,14 +65,37 @@ const createApplication = router.post('/createApp', async (req, res, next) => {
 });
 
 
+/*
+    expected body: 
+    data: {
+        username: ...,
+        deletions: [{descriptor:..., id:...}]
+    }
+*/
+const deletePart = router.delete('/createApp', async (req, res, next) => {
+    try {
+        const body = req.body?.data;
+        const aCheck = await checkAuth(req, body?.username);
+        if (!aCheck){
+            throw new Exception("Unauthorized", "Unauthorized", 401);
+        }
+        console.log("CHECK SUCCESS");
+        const response = await controller.deletePartofApplication(body.deletions, req.cookies.auth);
+        res.send(response);
+    } catch (error) {
+        logger.log(error);
+        next(new Exception(error.message, "Failed to delete part of application", 400));
+    }
+});
+
 
 router.use('/', entry);
 router.use('/', createApplication);
+router.use('/', deletePart);
 
-const catchAll = router.all('*', async (req, res) => {
+router.all('*', async (req, res) => {
     res.status(404).send('404 not found');
 });
 
-router.use('/', catchAll);
 
 module.exports = router;

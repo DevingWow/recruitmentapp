@@ -188,11 +188,11 @@ class ApplicationDAO {
                 include: [
                     {
                         model: Availability,
-                        attributes: ['from_date', 'to_date'] // Selecting specific fields from the Availability model
+                        attributes: ['availabilities_id','from_date', 'to_date'] // Selecting specific fields from the Availability model
                     },
                     {
                         model: Competence_profile,
-                        attributes: ['years_of_experience'], // Selecting specific fields from the CompetenceProfile model
+                        attributes: ['competence_profile_id','years_of_experience'], // Selecting specific fields from the CompetenceProfile model
                         include: [
                             {
                                 model: Competence,
@@ -266,6 +266,30 @@ class ApplicationDAO {
             const DTOs = result.map(e => new ProfileDTO(e.competence_profile_id,
                 e.person_id, e.competence_id, e.years_of_experience));
             return DTOs;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async deleteAvailability (availability_id){
+        try {
+            await Availability.destroy({
+                where: {
+                    availabilities_id: availability_id
+                }
+            });
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async deleteCompetenceProfile (competence_profile_id){
+        try {
+            await Competence_profile.destroy({
+                where: {
+                    competence_profile_id: competence_profile_id
+                }
+            });
         } catch (error) {
             throw error;
         }
