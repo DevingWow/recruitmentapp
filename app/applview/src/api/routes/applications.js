@@ -45,6 +45,15 @@ router.get('/own', async (req, res, next)=>{
     }
 })
 
+router.get('/competencies', async (req, res, next) => {
+    try {
+        const competencies = await controller.get_competencies();
+        res.send(competencies);
+    } catch (error) {
+        next(error);
+    }
+});
+
 
 
 module.exports = router;

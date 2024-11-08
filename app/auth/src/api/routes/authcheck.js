@@ -15,7 +15,9 @@ router.get('/',async (req, res, next) => {
             console.log(JSON.stringify(user))
             console.log(originalUri);
             if (originalUri.startsWith('/applications')){
-                
+                if (originalUri.startsWith('/applications/competencies') && user){
+                    res.status(200).send({auth_status: 'Authorized'});
+                }
                 if (user?.role_id === RECRUITER){
                     res.status(200).send({auth_status: 'Authorized'});
                 }
