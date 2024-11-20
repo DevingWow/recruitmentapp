@@ -20,7 +20,7 @@ echo "sleeping $sleeptime seconds"
 sleep $sleeptime
 
 NGINX_DOCKER_PATH='app/gateway/local/'
-MICROAUTH_DOCKER_PATH='app/applview/deployment/local/Dockerfile'
+MICROAUTH_DOCKER_PATH='app/auth/deployment/local/Dockerfile'
 APPLVIEW_DOCKER_PATH='app/applview/deployment/local/Dockerfile'
 APPLCREATE_DOCKER_PATH='app/applcreate/deployment/local/Dockerfile'
 
